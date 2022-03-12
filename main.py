@@ -28,7 +28,6 @@ def play_game():
         hint = (check_move(temp, correct_word))
 
         # check to see if hint is correct (meaning guess is correct word)
-
         if check_hint(hint):
             break
         """""
@@ -41,7 +40,7 @@ def play_game():
         else:
             print("Your hint is:", hint)
         """
-
+        # add one to your counter, resembles the amount of guesses user has used
         counter = counter + 1
 
         # if counter == 6 then game is over
