@@ -19,12 +19,19 @@ def play_game():
     # Loop to play Wordle
     while play:
         # Get user input
-        print("Guess:", end='')
-        guess[counter] = input()
+        print("Would you like to randomly generate a guess? Y/N", end='')
+        if input() is "Y":
+            guess[counter] = random_guess()
+        else:
+            guess[counter] = get_user_guess()
         temp = guess[counter]
         hint = (check_move(temp, correct_word))
 
         # check to see if hint is correct (meaning guess is correct word)
+
+        if check_hint(hint):
+            break
+        """""
         if hint == "%%%%%":
             print("Your hint is:", hint)
             print("Congratulations! You win!")
@@ -33,18 +40,40 @@ def play_game():
         # simply display hint if guess is incorrect
         else:
             print("Your hint is:", hint)
+        """
+
         counter = counter + 1
 
         # if counter == 6 then game is over
-        if counter == 6:
-            print("You lose! The correct word was:", correct_word)
-            break
+        play = check_counter(counter, correct_word)
+
+
+def check_counter(counter, correct_word):
+    if counter == 6:
+        print("You lose! The correct word was:", correct_word)
+        return False
+    else:
+        return True
+
+
+def check_hint(hint):
+    if hint == "%%%%%":
+        print("Your hint is:", hint)
+        print("Congratulations! You win!")
+        return True
+    else:
+        print("Your hint is:", hint)
+        return False
+
+
+def get_user_guess():
+    print("Guess:", end='')
+    guess = input()
+    return guess
 
 
 # checks move and constructs a hint to return to the user
 def check_move(guess, correct_word):
-    print(guess)
-    print(correct_word)
     index = 0
     done_letters = [None] * 5
     hint = ["!"] * 5
@@ -92,7 +121,20 @@ def check_move(guess, correct_word):
 def get_correct_move(file_name):
     with open(file_name) as f:
         lines = f.readlines()
+    for x in range(len(lines)):
+        lines[x] = lines[x].strip("\n")
+
+    # remove first and last index
+    del lines[0]
+    del lines[-1]
     return lines
+
+
+# algorithm to get random guess each time
+def random_guess():
+    total_guess = get_correct_move("Wordle Answers.txt")
+    guess = total_guess[randint(0, len(total_guess))]
+    return guess
 
 
 if __name__ == "__main__":
