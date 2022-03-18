@@ -5,10 +5,13 @@ from random import randint
 def play_game():
     play = True
     guess = [None] * 6
+    hints = ["!!!!!"] * 6
     counter = 0
     total_words = get_correct_move("Wordle Answers.txt")
     correct_word = total_words[randint(0, len(total_words))]
-    print(correct_word)
+    # print(correct_word)
+
+    algo_array = get_correct_move("Wordle Answers.txt")
 
     # Initial instructions
     print("Welcome to Wordle!\nIn this game, you have 6 guesses to guess the correct 5 letter word!")
@@ -21,14 +24,22 @@ def play_game():
         # Get user input
         print("Would you like to randomly generate a guess? Y/N", end='')
         if input() is "Y":
-            guess[counter] = random_guess()
+            # guess[counter] = random_guess()
+            if counter is 0:
+                guess[counter] = total_words[randint(0, len(total_words))]
+            else:
+                algo_array = simple_algorithm(guess[counter - 1], algo_array, hints[counter - 1])
+            print((len(algo_array)))
+            guess[counter] = algo_array[randint(0, len(algo_array))]
+            print(counter)
+            print(guess[counter])
         else:
             guess[counter] = get_user_guess()
         temp = guess[counter]
-        hint = (check_move(temp, correct_word))
+        hints[counter] = (check_move(temp, correct_word))
 
         # check to see if hint is correct (meaning guess is correct word)
-        if check_hint(hint):
+        if check_hint(hints[counter]):
             break
         """""
         if hint == "%%%%%":
@@ -47,6 +58,7 @@ def play_game():
         play = check_counter(counter, correct_word)
 
 
+# checks counter to see if user has reached maximum amount of guesses
 def check_counter(counter, correct_word):
     if counter == 6:
         print("You lose! The correct word was:", correct_word)
@@ -55,6 +67,7 @@ def check_counter(counter, correct_word):
         return True
 
 
+# checks hint and outputs information based on correctness
 def check_hint(hint):
     if hint == "%%%%%":
         print("Your hint is:", hint)
@@ -65,10 +78,41 @@ def check_hint(hint):
         return False
 
 
+# asks the user to input a guess
 def get_user_guess():
     print("Guess:", end='')
     guess = input()
     return guess
+
+
+# simple algorithm that cycles through
+def simple_algorithm(previous_guess, valid_guesses, hint):
+    if hint == "!!!!!":
+        return valid_guesses
+    char_index = 0
+    new_guesses = []
+    done_words = []
+    for valid in valid_guesses:
+        index = 0
+        for char_guess in previous_guess:
+            if char_guess == valid[index]:
+                done_words.append(valid)
+                break
+
+    for char in hint:
+        if char == "%":
+            for guess in valid_guesses:
+                if previous_guess[char_index] == guess[char_index]:
+                    new_guesses.append(guess)
+            char_index = char_index + 1
+        elif char == "#":
+            for guess in valid_guesses:
+                if previous_guess[char_index] in guess and guess not in done_words:
+                    new_guesses.append(guess)
+            char_index = char_index + 1
+        else:
+            char_index = char_index + 1
+    return new_guesses
 
 
 # checks move and constructs a hint to return to the user
@@ -117,6 +161,7 @@ def check_move(guess, correct_word):
     return hint_str
 
 
+# total correct words array
 def get_correct_move(file_name):
     with open(file_name) as f:
         lines = f.readlines()
@@ -138,3 +183,4 @@ def random_guess():
 
 if __name__ == "__main__":
     play_game()
+    # correct work is snake, guess is snaee
