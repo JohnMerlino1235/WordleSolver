@@ -87,8 +87,15 @@ def get_user_guess():
 
 # simple algorithm that cycles through
 def simple_algorithm(previous_guess, valid_guesses, hint):
+    
+    # remove guess from valid guess array
+    valid_guesses.remove(previous_guess)
+
     if hint == "!!!!!":
         return valid_guesses
+    
+
+
     char_index = 0
     new_guesses = []
     done_words = []
