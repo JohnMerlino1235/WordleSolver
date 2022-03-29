@@ -1,5 +1,6 @@
 # Wordle Game Basis
 from random import randint
+from unittest.loader import VALID_MODULE_NAME
 
 
 def play_game():
@@ -8,6 +9,7 @@ def play_game():
     hints = ["!!!!!"] * 6
     counter = 0
     total_words = get_correct_move("Wordle Answers.txt")
+    valid_letters = "abcdefghijklmnopqrstuvwxyz"
     correct_word = total_words[randint(0, len(total_words))]
     # print(correct_word)
 
@@ -28,7 +30,7 @@ def play_game():
             if counter is 0:
                 guess[counter] = total_words[randint(0, len(total_words))]
             else:
-                algo_array = simple_algorithm(guess[counter - 1], algo_array, hints[counter - 1])
+                valid_letters = simple_algorithm(guess[counter - 1], algo_array, hints[counter - 1], valid_letters)
             print((len(algo_array)))
             guess[counter] = algo_array[randint(0, len(algo_array))]
             print(counter)
@@ -84,27 +86,23 @@ def get_user_guess():
     guess = input()
     return guess
 
+def check_letters(a, b):
+    return a == b
 
-# simple algorithm that cycles through
-def simple_algorithm(previous_guess, valid_guesses, hint):
+# simple algorithm that cycles through and returns valid letters
+def simple_algorithm(previous_guess, valid_letters, hint):
+    index = 0
+    for c in hint:
+        if c == "!":
+            valid_letters.replace(previous_guess[index], 'a')
+        index = index + 1
+    return valid_letters
+
     
-    # remove guess from valid guess array
-    valid_guesses.remove(previous_guess)
-
-    if hint == "!!!!!":
-        return valid_guesses
-    
-
 
     char_index = 0
     new_guesses = []
-    done_words = []
-    for valid in valid_guesses:
-        index = 0
-        for char_guess in previous_guess:
-            if char_guess == valid[index]:
-                done_words.append(valid)
-                break
+ 
 
     for char in hint:
         if char == "%":
@@ -189,5 +187,10 @@ def random_guess():
 
 
 if __name__ == "__main__":
-    play_game()
-    # correct work is snake, guess is snaee
+    # play_game()
+    # simple_algorithm("snake", , "%%%!%")
+    # algo_array = get_correct_move("Wordle Answers.txt")
+    # print(len(algo_array))
+    temp = simple_algorithm("snaee", "abcdefghijklmnopqrstuvwxyz", "%%%!%")
+    print(temp)
+    print(len(temp))
