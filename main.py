@@ -7,11 +7,16 @@ def play_game():
     guess = [None] * 6
     hints = ["!!!!!"] * 6
     counter = 0
-    total_words = get_correct_move("Wordle Answers.txt")
+    total_words = load_words("Wordle Answers.txt")
     correct_word = total_words[randint(0, len(total_words))]
+
     # print(correct_word)
 
-    algo_array = get_correct_move("Wordle Answers.txt")
+    guesses_list = total_words
+    letter_list = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r""s", "t",
+                   "u", "v", "w", "x", "y", "z"]
+
+    constructed_word = "!!!!!"
 
     # Initial instructions
     print("Welcome to Wordle!\nIn this game, you have 6 guesses to guess the correct 5 letter word!")
@@ -24,18 +29,21 @@ def play_game():
         # Get user input
         print("Would you like to randomly generate a guess? Y/N", end='')
         if input() is "Y":
-            # guess[counter] = random_guess()
             if counter is 0:
-                guess[counter] = total_words[randint(0, len(total_words))]
+                guess[counter] = random_guess(guesses_list)
             else:
-                algo_array = simple_algorithm(guess[counter - 1], algo_array, hints[counter - 1])
-            print((len(algo_array)))
-            guess[counter] = algo_array[randint(0, len(algo_array))]
-            print(counter)
-            print(guess[counter])
+                letter_list = get_updated_letters(guess[counter - 1], hints[counter - 1], letter_list)
+                print(len(guesses_list))
+                guesses_list = get_updated_words(letter_list, guesses_list)
+                print(len(guesses_list))
+                guess[counter] = random_guess(guesses_list)
+
+
         else:
             guess[counter] = get_user_guess()
+
         temp = guess[counter]
+        print("Your guess is:", temp)
         hints[counter] = (check_move(temp, correct_word))
 
         # check to see if hint is correct (meaning guess is correct word)
@@ -67,6 +75,40 @@ def check_counter(counter, correct_word):
         return True
 
 
+# gets updated possible letters
+def get_updated_letters(guess, hint, letter_list):
+    index = 0
+    new_list = letter_list
+    for h in hint:
+        if h == "!" and guess[index] in new_list:
+            new_list.remove(guess[index])
+        index += 1
+
+    return new_list
+
+
+def construct_correct_word(guess, hint):
+    index = 0
+    new_string = ""
+    for h in hint:
+        if h == "%":
+            new_string = new_string + guess[index]
+        else:
+            new_string = new_string + "!"
+        index += 1
+    return new_string
+
+
+def get_updated_words(letter_list, word_list):
+    new_list = []
+    for letter in letter_list:
+        for word in word_list:
+            if letter in word and word not in new_list:
+                new_list.append(word)
+
+    return new_list
+
+
 # checks hint and outputs information based on correctness
 def check_hint(hint):
     if hint == "%%%%%":
@@ -87,14 +129,11 @@ def get_user_guess():
 
 # simple algorithm that cycles through
 def simple_algorithm(previous_guess, valid_guesses, hint):
-    
     # remove guess from valid guess array
     valid_guesses.remove(previous_guess)
 
     if hint == "!!!!!":
         return valid_guesses
-    
-
 
     char_index = 0
     new_guesses = []
@@ -168,8 +207,8 @@ def check_move(guess, correct_word):
     return hint_str
 
 
-# total correct words array
-def get_correct_move(file_name):
+# total possible words array
+def load_words(file_name):
     with open(file_name) as f:
         lines = f.readlines()
     for x in range(len(lines)):
@@ -182,12 +221,9 @@ def get_correct_move(file_name):
 
 
 # algorithm to get random guess each time
-def random_guess():
-    total_guess = get_correct_move("Wordle Answers.txt")
-    guess = total_guess[randint(0, len(total_guess))]
-    return guess
+def random_guess(word_list):
+    return word_list[randint(0, len(word_list))]
 
 
 if __name__ == "__main__":
     play_game()
-    # correct work is snake, guess is snaee
