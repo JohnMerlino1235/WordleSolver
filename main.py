@@ -13,8 +13,11 @@ def play_game():
     # print(correct_word)
 
     guesses_list = total_words
-    letter_list = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r""s", "t",
+    letter_list = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t",
                    "u", "v", "w", "x", "y", "z"]
+
+    necessary_letters = []
+    bad_letters = []
 
     constructed_word = "!!!!!"
 
@@ -29,26 +32,52 @@ def play_game():
         # Get user input
         print("Would you like to randomly generate a guess? Y/N", end='')
         if input() is "Y":
-            if counter is 0:
-                guess[counter] = random_guess(guesses_list)
-            else:
-                letter_list = get_updated_letters(guess[counter - 1], hints[counter - 1], letter_list)
-                print(len(guesses_list))
-                guesses_list = get_updated_words(letter_list, guesses_list)
-                print(len(guesses_list))
-                guess[counter] = random_guess(guesses_list)
-
-
+            guess[counter] = random_guess(total_words)
         else:
             guess[counter] = get_user_guess()
 
-        temp = guess[counter]
-        print("Your guess is:", temp)
-        hints[counter] = (check_move(temp, correct_word))
-
+        temp_guess = guess[counter]
+        print("Your guess is:", temp_guess)
+        temp_hint = check_move(temp_guess, correct_word)
+        hints[counter] = temp_hint
         # check to see if hint is correct (meaning guess is correct word)
         if check_hint(hints[counter]):
             break
+        temp_index = 0
+        print(len(total_words))
+        for h in temp_hint:
+            if h == "!":
+                total_words = cannot_contain(temp_guess[temp_index], total_words)
+                # print("!:", len(total_words))
+                # print(total_words)
+            elif h == "#":
+                total_words = must_contain(temp_guess[temp_index], total_words)
+                # print("#:", len(total_words))
+                # print(total_words)
+
+            elif h == "%":
+                total_words = correct_position(temp_guess[temp_index], total_words, temp_index)
+                # print("%:", len(total_words))
+                # print(total_words)
+
+            temp_index += 1
+        """
+        if "#" in temp_hint:
+            total_words = must_contain(temp_guess, temp_hint, total_words)
+
+        print("# in hint", len(total_words))
+
+        if "%" in temp_hint:
+            total_words = correct_position(temp_guess, temp_hint, total_words)
+        print("% in hint", len(total_words))
+
+
+
+        if "!" in temp_hint:
+            total_words = cannot_contain(temp_guess, temp_hint, total_words)
+        print("! in hint", len(total_words))
+        """
+
         """""
         if hint == "%%%%%":
             print("Your hint is:", hint)
@@ -75,18 +104,69 @@ def check_counter(counter, correct_word):
         return True
 
 
-# gets updated possible letters
-def get_updated_letters(guess, hint, letter_list):
+def correct_position(character, word_list, index):
+    new_list = []
+    for word in word_list:
+        if word[index] == character:
+            new_list.append(word)
+    return new_list
+
+
+def must_contain(character, word_list):
+    new_list = []
+    for word in word_list:
+        if character in word:
+            new_list.append(word)
+    return new_list
+
+
+def cannot_contain(character, word_list):
+    new_list = []
+    for word in word_list:
+        if character not in word:
+            new_list.append(word)
+    return new_list
+
+
+"""
+def correct_position(guess, hint, word_list):
+    new_list = []
     index = 0
-    new_list = letter_list
     for h in hint:
-        if h == "!" and guess[index] in new_list:
-            new_list.remove(guess[index])
+        if h == "%":
+            for word in word_list:
+                if word[index] == guess[index]:
+                    new_list.append(word)
         index += 1
 
     return new_list
 
+def must_contain(guess, hint, word_list):
+    new_list = word_list
+    index = 0
+    for h in hint:
+        if h == "#":
+            for word in word_list:
+                if guess[index] not in word:
+                    new_list.remove(word)
+        index += 1
 
+    return new_list
+
+def cannot_contain(guess, hint, word_list):
+    new_list = word_list
+    index = 0
+    for h in hint:
+        if h == "!":
+            for word in word_list:
+                if guess[index] in word:
+                    new_list.remove(word)
+        index += 1
+
+    return new_list
+"""
+
+"""
 def construct_correct_word(guess, hint):
     index = 0
     new_string = ""
@@ -97,14 +177,22 @@ def construct_correct_word(guess, hint):
             new_string = new_string + "!"
         index += 1
     return new_string
+"""
 
 
-def get_updated_words(letter_list, word_list):
+def get_updated_words(necessary_letters, bad_letters, word_list):
     new_list = []
-    for letter in letter_list:
-        for word in word_list:
-            if letter in word and word not in new_list:
+    for word in word_list:
+        for character in word:
+            if character not in bad_letters:
                 new_list.append(word)
+                break
+
+    for word in new_list:
+        for character in word:
+            if character not in necessary_letters:
+                new_list.remove(word)
+                break
 
     return new_list
 
@@ -127,6 +215,7 @@ def get_user_guess():
     return guess
 
 
+"""
 # simple algorithm that cycles through
 def simple_algorithm(previous_guess, valid_guesses, hint):
     # remove guess from valid guess array
@@ -159,6 +248,7 @@ def simple_algorithm(previous_guess, valid_guesses, hint):
         else:
             char_index = char_index + 1
     return new_guesses
+"""
 
 
 # checks move and constructs a hint to return to the user
@@ -186,17 +276,6 @@ def check_move(guess, correct_word):
         if g not in done_letters and g in correct_word:
             hint[index] = "#"
         index = index + 1
-        """""
-        if index == 5:
-            break
-        if g == correct_wrd[index]:
-            hint = hint + "%"
-        elif g in correct_word and g not in done_letters:
-            hint = hint + "#"
-        else:
-            hint = hint + "!"
-        index = index + 1
-        """""
     if len(hint) < 5:
         for x in range(5 - len(hint)):
             hint = hint + "!"
