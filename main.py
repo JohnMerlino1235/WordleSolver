@@ -10,17 +10,6 @@ def play_game():
     total_words = load_words("Wordle Answers.txt")
     correct_word = total_words[randint(0, len(total_words))]
 
-    # print(correct_word)
-
-    guesses_list = total_words
-    letter_list = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t",
-                   "u", "v", "w", "x", "y", "z"]
-
-    necessary_letters = []
-    bad_letters = []
-
-    constructed_word = "!!!!!"
-
     # Initial instructions
     print("Welcome to Wordle!\nIn this game, you have 6 guesses to guess the correct 5 letter word!")
     print(
@@ -61,33 +50,6 @@ def play_game():
                 # print(total_words)
 
             temp_index += 1
-        """
-        if "#" in temp_hint:
-            total_words = must_contain(temp_guess, temp_hint, total_words)
-
-        print("# in hint", len(total_words))
-
-        if "%" in temp_hint:
-            total_words = correct_position(temp_guess, temp_hint, total_words)
-        print("% in hint", len(total_words))
-
-
-
-        if "!" in temp_hint:
-            total_words = cannot_contain(temp_guess, temp_hint, total_words)
-        print("! in hint", len(total_words))
-        """
-
-        """""
-        if hint == "%%%%%":
-            print("Your hint is:", hint)
-            print("Congratulations! You win!")
-            play = False
-
-        # simply display hint if guess is incorrect
-        else:
-            print("Your hint is:", hint)
-        """
         # add one to your counter, resembles the amount of guesses user has used
         counter = counter + 1
 
@@ -102,6 +64,15 @@ def check_counter(counter, correct_word):
         return False
     else:
         return True
+
+def minimax(word_list, depth, best_word, curr_word, beta):
+    if depth == len(word_list):
+        return best_word
+    min_val = 999999999999
+    best = word_list[0]
+    for word in word_list:
+        val = minimax(word_list, depth + 1, best, curr_word, beta)
+        min_val = min(min_val, val)
 
 
 def correct_position(character, word_list, index):
