@@ -17,13 +17,11 @@ def online_play():
         correct_word_dic, has_to_contain, bad_letters = get_correct_word_counter(prev_guess, hint,
                                                                                  correct_word_dic,
                                                                                  has_to_contain, bad_letters)
-        # print("TotalWords Before:", len(total_words))
         total_words = get_total_word_list(total_words, correct_word_dic, has_to_contain, bad_letters)
         prev_guess = minimax(correct_word_dic, has_to_contain, bad_letters, 0, total_words)
         if prev_guess in total_words:
             total_words.remove(prev_guess)
 
-        # print("TotalWords After:", len(total_words))
         print("Here is the best word to use based off of your hint:", prev_guess)
 
         print("Please print your hint:", end='')
@@ -93,7 +91,6 @@ def analyze_heuristic(guess, correct_word_dic, has_to_contain, bad_letters):
             score = -999999999999999
             break
         elif guess[index] in has_to_contain and index in has_to_contain[guess[index]]:
-            print("gets here", guess)
             score = -99999999999999
             break
         elif guess[index] in has_to_contain and index not in has_to_contain[guess[index]]:
@@ -110,12 +107,6 @@ def get_correct_word_counter(guess, hint, correct_word_dic, has_to_contain, bad_
     for index in range(len(hint)):
         if hint[index] == "%" and index not in correct_word_dic:
             correct_word_dic[index] = guess[index]
-            """
-            if guess[index] not in frequency:
-                frequency[guess[index]] = 1
-            else:
-                frequency[guess[index]] += 1
-            """
         elif hint[index] == "!" and guess[index] not in bad_letters:
             bad_letters.append(guess[index])
         elif hint[index] == "#" and guess[index] not in has_to_contain and guess[
@@ -123,13 +114,6 @@ def get_correct_word_counter(guess, hint, correct_word_dic, has_to_contain, bad_
             has_to_contain[guess[index]] = [index]
         elif hint[index] == "#" and guess[index] in has_to_contain and guess[index] not in correct_word_dic.values() and guess[index] not in has_to_contain[guess[index]] and guess[index] not in bad_letters:
             has_to_contain[guess[index]].append(index)
-
-            """
-            if guess[index] not in frequency:
-                frequency[guess[index]] = 1
-            else:
-                frequency[guess[index]] += 1
-            """
 
     return correct_word_dic, has_to_contain, bad_letters
 
