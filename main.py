@@ -42,35 +42,6 @@ def get_total_word_list(total_words, correct_word_dic, has_to_contain, bad_lette
             if word[index] in has_to_contain and index not in has_to_contain[word[index]]:
                 final_list.append(word)
                 break
-            """
-            if index in correct_word_dic and word[index] != correct_word_dic[index]:
-                total_words.remove(word)
-                break
-            elif word[index] in correct_word_dic.values() and index in correct_word_dic and index != get_key(word[index], correct_word_dic):
-                total_words.remove(word)
-                break
-                """
-
-            """
-            elif word[index] not in bad_letters:
-                final_list.append(word)
-                break
-    for word in final_list:
-        for index in range(len(word)):
-            if word[index] in bad_letters:
-                final_list.remove(word)
-                break
-                """
-            """
-        if word in final_list:
-            for index in range(len(word)):
-                if word[index] in bad_letters:
-                    final_list.remove(word)
-                    break
-                elif index in correct_word_dic and correct_word_dic[index] != word[index]:
-                    final_list.remove(word)
-                    break
-                    """
 
 
     return total_words
@@ -217,59 +188,6 @@ def cannot_contain(character, word_list):
             new_list.append(word)
     return new_list
 
-
-"""
-def correct_position(guess, hint, word_list):
-    new_list = []
-    index = 0
-    for h in hint:
-        if h == "%":
-            for word in word_list:
-                if word[index] == guess[index]:
-                    new_list.append(word)
-        index += 1
-
-    return new_list
-
-def must_contain(guess, hint, word_list):
-    new_list = word_list
-    index = 0
-    for h in hint:
-        if h == "#":
-            for word in word_list:
-                if guess[index] not in word:
-                    new_list.remove(word)
-        index += 1
-
-    return new_list
-
-def cannot_contain(guess, hint, word_list):
-    new_list = word_list
-    index = 0
-    for h in hint:
-        if h == "!":
-            for word in word_list:
-                if guess[index] in word:
-                    new_list.remove(word)
-        index += 1
-
-    return new_list
-"""
-
-"""
-def construct_correct_word(guess, hint):
-    index = 0
-    new_string = ""
-    for h in hint:
-        if h == "%":
-            new_string = new_string + guess[index]
-        else:
-            new_string = new_string + "!"
-        index += 1
-    return new_string
-"""
-
-
 def get_updated_words(necessary_letters, bad_letters, word_list):
     new_list = []
     for word in word_list:
@@ -303,43 +221,6 @@ def get_user_guess():
     print("Guess:", end='')
     guess = input()
     return guess
-
-
-"""
-# simple algorithm that cycles through
-def simple_algorithm(previous_guess, valid_guesses, hint):
-    # remove guess from valid guess array
-    valid_guesses.remove(previous_guess)
-
-    if hint == "!!!!!":
-        return valid_guesses
-
-    char_index = 0
-    new_guesses = []
-    done_words = []
-    for valid in valid_guesses:
-        index = 0
-        for char_guess in previous_guess:
-            if char_guess == valid[index]:
-                done_words.append(valid)
-                break
-
-    for char in hint:
-        if char == "%":
-            for guess in valid_guesses:
-                if previous_guess[char_index] == guess[char_index]:
-                    new_guesses.append(guess)
-            char_index = char_index + 1
-        elif char == "#":
-            for guess in valid_guesses:
-                if previous_guess[char_index] in guess and guess not in done_words:
-                    new_guesses.append(guess)
-            char_index = char_index + 1
-        else:
-            char_index = char_index + 1
-    return new_guesses
-"""
-
 
 # checks move and constructs a hint to return to the user
 def check_move(guess, correct_word):
@@ -395,17 +276,4 @@ def random_guess(word_list):
 
 
 if __name__ == "__main__":
-    # play_game()
-    # correct word is snake
-    """
-    guess = "snaaa"
-    hint = "%%%!!"
-    total_words = load_words("Wordle Answers.txt")
-
-    correct_word_dic, has_to_contain, bad_letters = get_correct_word_counter(guess, hint, {},
-                                                                             [], [])
-
-    total_words = get_total_word_list(total_words, correct_word_dic, has_to_contain)
-    prev_guess = minimax(correct_word_dic, has_to_contain, bad_letters, 0, total_words)
-    """
     online_play()
